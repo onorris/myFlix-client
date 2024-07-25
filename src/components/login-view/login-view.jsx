@@ -5,21 +5,30 @@ export const LoginView = (prop) => {
         event.preventDefault();
     
         const data = {
-          access: username,
-          secret: password
+          Username: username,
+          Password: password
         };
 
-        fetch("https://openlibrary.org/account/login.json", {
+        fetch("https://movie-flix-api-7-2024-a1aaa29e3315.herokuapp.com/login", {
             method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+              },
             body: JSON.stringify(data)
-          }).then((response) => {
-            if (response.ok) {
-              prop.onLoggedIn(username);
+          }).then((response) => response.json())
+            .then((data) => {
+            if (data.user) { // if successful login (user will not be undefined)
+                localStorage.setItem("user", JSON.stringify(data.user));
+                localStorage.setItem("token", data.token);
+                prop.onLoggedIn(data.user, data.token);
             } else {
-              alert("Login failed");
+                alert("No such user");
             }
           })
-        };
+          .catch((e) => {
+            alert("Something went wrong");
+          })};
+
         const [username, setUsername] = useState("");
         const [password, setPassword] = useState("");
     return (
