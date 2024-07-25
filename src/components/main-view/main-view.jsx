@@ -26,7 +26,6 @@ export const MainView = () => {
 
       // If there is a selected movie show the MovieView component
       if (selectedMovie) {
-        console.log(selectedMovie)
         return <MovieView movie={selectedMovie} 
                           onBackClick={() => setSelectedMovie(null)} />;
       }
