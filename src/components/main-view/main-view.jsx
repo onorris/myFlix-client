@@ -1,8 +1,10 @@
 import { useState, useEffect} from "react";
 import { MovieCard } from "../movie-card/movie-card";
 import { MovieView } from "../movie-view/movie-view";
+import { LoginView } from "../login-view/login-view";
 
 export const MainView = () => {
+      
       const [movies, setMovies] = useState([]);
       useEffect(() => {
         fetch('https://movie-flix-api-7-2024-a1aaa29e3315.herokuapp.com/movies')
@@ -23,6 +25,11 @@ export const MainView = () => {
       // Create a state to keep track of what movie is selected
       // [x,y] = useState() creates a variable x to store and a function y to store information in that variable
       const [selectedMovie, setSelectedMovie] = useState(null);
+      const [user, setUser] = useState(null);
+
+      if (!user) {
+        return <LoginView onLoggedIn={(user) => setUser(user)}/>;
+      }
 
       // If there is a selected movie show the MovieView component
       if (selectedMovie) {
@@ -47,6 +54,7 @@ export const MainView = () => {
                             setSelectedMovie(newSelectedMovie);
           }}/>;
       })}
+    <button onClick={() => { setUser(null); }}>Logout</button>
     </div>
   );
   };
