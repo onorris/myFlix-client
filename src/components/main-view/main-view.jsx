@@ -3,6 +3,9 @@ import { MovieCard } from "../movie-card/movie-card";
 import { MovieView } from "../movie-view/movie-view";
 import { LoginView } from "../login-view/login-view";
 import { SignupView } from "../signup-view/signup-view";
+import Row from "react-bootstrap/row";
+import Col from 'react-bootstrap/col';
+import Button from "react-bootstrap/button";
 
 export const MainView = () => {
       const storedUser = JSON.parse(localStorage.getItem("user"));
@@ -37,49 +40,56 @@ export const MainView = () => {
           });
       }, [token]);
 
-      if (!user) {
-        return (
-          <>
-          <h1>Existing MyFlix Users</h1>
-          <h2>Log In:</h2>
-          <LoginView
-            onLoggedIn={(user, token) => {
+
+      return(
+        <Row className="justify-content-md-center">
+          {!user ? ( 
+          
+          <Col md={5}>
+            <h1>Existing MyFlix Users</h1>
+            <h2>Log In:</h2>
+            <LoginView
+              onLoggedIn={(user, token) => {
               setUser(user);
               setToken(token);
             }}
+            />
+            <h1>New MyFlix User?</h1>
+            <h2>Sign Up for MyFlix Here:</h2>
+            <SignupView />
+          </Col>
+
+                 
+        ) : selectedMovie ? ( 
+          <Col md={8}>
+            <MovieView movie={selectedMovie} 
+                       onBackClick={() => setSelectedMovie(null)} />
+          </Col>
+        ) : movies.length === 0 ? ( 
+          <div>The list is empty!</div>
+        ) : ( 
+          //return the div for the MovieCard
+          //Passes in the list of movies into a loop (map)
+          //gives the prop elements of movie, key, onMovieClick
+          //onMovieClick is what exposes the setSelectedMovie to the MovieCard so it can be set as the onClick event
+          <>
+            {movies.map((movie) => (
+              <Col className="mb-5" key={movie.id} md={3}>
+                <MovieCard movie={movie} 
+                           key={movie.id}          
+                           onMovieClick={(newSelectedMovie) => {
+                           setSelectedMovie(newSelectedMovie);
+          }}
           />
-          <h1>New MyFlix User?</h1>
-          <h2>Sign Up for MyFlix Here:</h2>
-          <SignupView />
-        </>
-        );
-      }
+         </Col>
+      ))}
+    
+      <Button variant="primary" onClick={() => { setUser(null); setToken(null);  localStorage.clear(); }}>Logout</Button>
+    </>
+  
+        
+      )}
+      </Row>
+      )
 
-
-      // If there is a selected movie show the MovieView component
-      if (selectedMovie) {
-        return <MovieView movie={selectedMovie} 
-                          onBackClick={() => setSelectedMovie(null)} />;
-      }
-      // Ensure we have some movies
-      if (movies.length === 0) {
-        return <div>The list is empty!</div>;
-      }
-
-    return (
-        //return the div for the MovieCard
-        //Passes in the list of movies into a loop (map)
-        //gives the prop elements of movie, key, onMovieClick
-        //onMovieClick is what exposes the setSelectedMovie to the MovieCard so it can be set as the onClick event
-    <div>
-      {movies.map((movie) => {
-        return <MovieCard movie={movie} 
-                          key={movie.id}          
-                          onMovieClick={(newSelectedMovie) => {
-                            setSelectedMovie(newSelectedMovie);
-          }}/>;
-      })}
-    <button onClick={() => { setUser(null); setToken(null);  localStorage.clear(); }}>Logout</button>
-    </div>
-  );
   };
